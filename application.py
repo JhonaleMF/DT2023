@@ -87,9 +87,9 @@ def predict():
     if prediction == '0':
         return conversacion[0]['Respuesta']
     if prediction == '1':
-        return conversacion[0]['Respuesta']
+        return conversacion[1]['Respuesta']
     else:
-        return conversacion[0]['Respuesta']
+        return conversacion[2]['Respuesta']
     # return jsonify({'response' : str(prediction[0])})
 
 
