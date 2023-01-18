@@ -9,6 +9,7 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
 nltk.download('stopwords')
+import json
 
 
 os.chdir(os.path.dirname(__file__))
@@ -84,11 +85,11 @@ def predict():
     prediction = model.predict(pd.Series(data))
     prediction = str(prediction[0])
     if prediction == '0':
-        return jsonify({"respond":(conversacion[0]['Respuesta']).decode('unicode-escape')})
+        return conversacion[0]['Respuesta']
     if prediction == '1':
-        return jsonify({"respond":(conversacion[1]['Respuesta']).decode('unicode-escape')})
+        return conversacion[0]['Respuesta']
     else:
-        return jsonify({"respond":(conversacion[2]['Respuesta']).decode('unicode-escape')})
+        return conversacion[0]['Respuesta']
     # return jsonify({'response' : str(prediction[0])})
 
 
