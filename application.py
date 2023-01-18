@@ -15,7 +15,7 @@ nltk.download('stopwords')
 os.chdir(os.path.dirname(__file__))
 
 
-application = flask.Flask(__name__)
+
 
 # Con esta funcion dejamos solo las raices de las palabrasssssssssssssssss
 def stem_text(df):
@@ -44,6 +44,7 @@ def to_lowercase(df):
     return df
 
 model = pickle.load(open(r'model.pkl', 'rb'))
+application = flask.Flask(__name__)
 
 conversacion={'Introduccion':'''Hola, soy SARA. ¿En qué puedo ayudarte? Por favor, introduce brevemente qué te preocupa y veré que puedo hacer. Todavía estoy en desarrollo, por lo que te agradecería que lo comentases en una única oración''',
 
