@@ -6,6 +6,7 @@ import flask
 import os 
 import nltk
 import string
+import dill
 from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
 nltk.download('stopwords')
@@ -66,6 +67,8 @@ http://127.0.0.1:5000/prediccion?question=Frase
 
 @application.route('/prediccion', methods=['GET'])
 def predict():
+    with open("tmp.pkl", "rb") as f:
+        model = dill.load(f)
         # Con esta funcion dejamos solo las raices de las palabrasssssssssssssssss
     
     #model = pickle.load(open(r'model.pkl', 'rb'))
@@ -109,7 +112,6 @@ def predict():
 
 
 if __name__ == "__main__":
-    with open('model.pkl', 'rb') as f:
-        model = pickle.load(f)
+    
     application.debug = True
     application.run()
