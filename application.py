@@ -84,11 +84,11 @@ def predict():
     prediction = model.predict(pd.Series(data))
     prediction = str(prediction[0])
     if prediction == '0':
-        return jsonify({"respond":conversacion[0]['Respuesta']})
+        return jsonify({"respond":(conversacion[0]['Respuesta']).decode('unicode-escape')})
     if prediction == '1':
-        return jsonify({"respond":conversacion[1]['Respuesta']})
+        return jsonify({"respond":(conversacion[1]['Respuesta']).decode('unicode-escape')})
     else:
-        return jsonify({"respond":conversacion[2]['Respuesta']})
+        return jsonify({"respond":(conversacion[2]['Respuesta']).decode('unicode-escape')})
     # return jsonify({'response' : str(prediction[0])})
 
 
