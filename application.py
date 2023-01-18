@@ -15,9 +15,8 @@ nltk.download('stopwords')
 os.chdir(os.path.dirname(__file__))
 
 
+application = flask.Flask(__name__)
 
-
-# Con esta funcion dejamos solo las raices de las palabrasssssssssssssssss
 def stem_text(df):
     stemmer = SnowballStemmer(language='spanish')
     df = df.apply(lambda x: " ".join([stemmer.stem(word) for word in x.split()]))
@@ -42,9 +41,7 @@ def remove_stopwords(df):
 def to_lowercase(df):
     df = df.apply(lambda x: x.lower())
     return df
-
-model = pickle.load(open(r'model.pkl', 'rb'))
-application = flask.Flask(__name__)
+#Signos de puntuacion, tildes y minusculas
 
 conversacion={'Introduccion':'''Hola, soy SARA. ¿En qué puedo ayudarte? Por favor, introduce brevemente qué te preocupa y veré que puedo hacer. Todavía estoy en desarrollo, por lo que te agradecería que lo comentases en una única oración''',
 
@@ -69,8 +66,9 @@ http://127.0.0.1:5000/prediccion?question=Frase
 
 @application.route('/prediccion', methods=['GET'])
 def predict():
-    #Signos de puntuacion, tildes y minusculas
-   
+        # Con esta funcion dejamos solo las raices de las palabrasssssssssssssssss
+    
+    model = pickle.load(open(r'model.pkl', 'rb'))
 
     # def depuntuation (df):
     #     df = df.apply(lambda x: x.replace('[{}]'.format(string.punctuation), ''))
