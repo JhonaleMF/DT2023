@@ -68,7 +68,7 @@ http://127.0.0.1:5000/prediccion?question=Frase
 def predict():
         # Con esta funcion dejamos solo las raices de las palabrasssssssssssssssss
     
-    model = pickle.load(open(r'model.pkl', 'rb'))
+    #model = pickle.load(open(r'model.pkl', 'rb'))
 
     # def depuntuation (df):
     #     df = df.apply(lambda x: x.replace('[{}]'.format(string.punctuation), ''))
@@ -109,5 +109,7 @@ def predict():
 
 
 if __name__ == "__main__":
+    with open('model.pkl', 'rb') as f:
+        model = pickle.load(f)
     application.debug = True
     application.run()
