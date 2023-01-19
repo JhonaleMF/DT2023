@@ -87,12 +87,13 @@ def predict():
     data= spanish_stemmer(data)
     prediction = model.predict(pd.Series(data))
     prediction = str(prediction[0])
-    if prediction == '0':
-        return conversacion[0]['Respuesta']
-    if prediction == '1':
-        return conversacion[1]['Respuesta']
-    else:
-        return conversacion[2]['Respuesta']
+    return prediction
+    # if prediction == '0':
+    #     return conversacion[0]['Respuesta']
+    # if prediction == '1':
+    #     return conversacion[1]['Respuesta']
+    # else:
+    #     return conversacion[2]['Respuesta']
     # return jsonify({'response' : str(prediction[0])})
 
 
