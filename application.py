@@ -6,7 +6,7 @@ import flask
 import os 
 import nltk
 import string
-import dill
+nltk.download('stopwords')
 
 from nltk.stem.snowball import SnowballStemmer
 
@@ -19,31 +19,7 @@ os.chdir(os.path.dirname(__file__))
 
 application = flask.Flask(__name__)
 
-def stem_text(df):
-    stemmer = SnowballStemmer(language='spanish')
-    df = df.apply(lambda x: " ".join([stemmer.stem(word) for word in x.split()]))
-    return df
-# Con esta funcion quitamos los signos de puntuacion
-def depuntuation (df):
-    df = df.apply(lambda x: x.replace('[{}]'.format(string.punctuation), ''))
-    return df
-
-# Con esta funcion quitamos las tildes
-def remove_tildes(df):
-    df = df.str.normalize('NFKD').str.encode('ascii', errors='ignore').str.decode('utf-8')
-    return df
-
-# Con esta funcion quitamos los stopwords
-def remove_stopwords(df):    
-    spanish_stopwords = stopwords.words('spanish')
-    df = df.apply(lambda x: ' '.join([word for word in x.split() if word not in (spanish_stopwords)]))
-    return df
-
-# Con esta funcion pasamos las celdas a minuscula
-def to_lowercase(df):
-    df = df.apply(lambda x: x.lower())
-    return df
-#Signos de puntuacion, tildes y minusculas
+model = pickle.load(open(r'modellll.pkl', 'rb'))
 
 conversacion={'Introduccion':'''Hola, soy SARA. ¿En qué puedo ayudarte? Por favor, introduce brevemente qué te preocupa y veré que puedo hacer. Todavía estoy en desarrollo, por lo que te agradecería que lo comentases en una única oración''',
 
@@ -68,8 +44,8 @@ http://127.0.0.1:5000/prediccion?question=Frase
 
 @application.route('/prediccion', methods=['GET'])
 def predict():
-    with open("tmp.pkl", "rb") as f:
-        model = dill.load(f)
+    # with open("tmp.pkl", "rb") as f:
+    #     model = dill.load(f)
         # Con esta funcion dejamos solo las raices de las palabrasssssssssssssssss
     
     #model = pickle.load(open(r'model.pkl', 'rb'))
@@ -94,14 +70,40 @@ def predict():
     #     df = df.apply(lambda x: x.lower())
     #     return df
 
+    def stem_text(df):
+        stemmer = SnowballStemmer(language='spanish')
+        df = df.apply(lambda x: " ".join([stemmer.stem(word) for word in x.split()]))
+        return df
+    # Con esta funcion quitamos los signos de puntuacion
+    def depuntuation (df):
+        df = df.apply(lambda x: x.replace('[{}]'.format(string.punctuation), ''))
+        return df
 
-    data = str(request.args["question"])
-    # data= depuntuation(data)
-    # data= to_lowercase(data)
-    # data= remove_tildes(data)
-    # data= remove_stopwords(data)
-    # data= stem_text(data)
-    prediction = model.predict(pd.Series(data))
+    # Con esta funcion quitamos las tildes
+    def remove_tildes(df):
+        df = df["Input"].str.normalize('NFKD').str.encode('ascii', errors='ignore').str.decode('utf-8')
+        return df
+
+    # Con esta funcion quitamos los stopwords
+    def remove_stopwords(df):    
+        spanish_stopwords = stopwords.words('spanish')
+        df = df.apply(lambda x: ' '.join([word for word in x.split() if word not in (spanish_stopwords)]))
+        return df
+
+    # Con esta funcion pasamos las celdas a minuscula
+    def to_lowercase(df):
+        df['Input'] = df['Input'].apply(lambda x: x.lower())
+        return df
+    
+    #Signos de puntuacion, tildes y minusculas
+    data = pd.DataFrame({'Input' : [str(request.args["question"])]})
+    
+    data= depuntuation(data)
+    data= to_lowercase(data)
+    data= remove_tildes(data)
+    data= remove_stopwords(data)
+    data= stem_text(data)
+    prediction = model.predict(data)
     prediction = str(prediction[0])
     if prediction == '0':
         return jsonify({"respond":conversacion[0]['Respuesta']})
@@ -112,7 +114,6 @@ def predict():
     # return jsonify({'response' : str(prediction[0])})
 
 
-if __name__ == "__main__":
-    
+if __name__ == "__main__":    
     application.debug = True
     application.run()
