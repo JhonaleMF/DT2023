@@ -44,7 +44,7 @@ http://127.0.0.1:5000/prediccion?question=Frase
 
 @application.route('/prediccion', methods=['GET'])
 def predict():
-    model = pickle.load(open(r'modelfinal.pkl', 'rb'))
+    model = pickle.load(open(r'model_jhon.pkl', 'rb'))
     #Quita tildes
     def normalize(text):
         replacement = (
