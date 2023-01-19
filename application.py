@@ -4,8 +4,8 @@ import pickle
 import pandas as pd
 import flask
 import os 
+import re
 import nltk
-import string
 nltk.download('stopwords')
 
 from nltk.stem.snowball import SnowballStemmer
@@ -44,67 +44,48 @@ http://127.0.0.1:5000/prediccion?question=Frase
 
 @application.route('/prediccion', methods=['GET'])
 def predict():
-    model = pickle.load(open(r'modellll.pkl', 'rb'))
-    # with open("tmp.pkl", "rb") as f:
-    #     model = dill.load(f)
-        # Con esta funcion dejamos solo las raices de las palabrasssssssssssssssss
-    
-    #model = pickle.load(open(r'model.pkl', 'rb'))
+    model = pickle.load(open(r'modelfinal.pkl', 'rb'))
+    #Quita tildes
+    def normalize(text):
+        replacement = (
+        ("á", "a"),
+        ("é", "e"),
+        ("í", "i"),
+        ("ó", "o"),
+        ("ú", "u")),
+        for i in replacement: 
+            for a, b in i: 
+                text = text.replace(a, b).replace(a.upper(), b.upper())
+        return text
 
-    # def depuntuation (df):
-    #     df = df.apply(lambda x: x.replace('[{}]'.format(string.punctuation), ''))
-    #     return df
+    #Quita signos de puntuación y mayúsculas
+    signos = re.compile("(\.)|(\;)|(\:)|(\/)|(\!)|(\?)|(\¿)|(\@)|(\,)|(\")|(\()|(\))|(\[)|(\])|(\d+)")
+    def signs_texts(text):
+        return signos.sub(' ', text.lower())
 
-    # def stem_text(df):
-    #     stemmer = SnowballStemmer(language='spanish')
-    #     df = df.apply(lambda x: " ".join([stemmer.stem(word) for word in x.split()]))
-    #     return df
+    #Simplificar el texto todo lo posible. 
+    #Stopwords
+    from nltk.corpus import stopwords
 
-    # def remove_tildes(df):
-    #     df = df.str.normalize('NFKD').str.encode('ascii', errors='ignore').str.decode('utf-8')
-    #     return df
-    # def remove_stopwords(df):    
-    #     spanish_stopwords = stopwords.words('spanish')
-    #     df = df.apply(lambda x: ' '.join([word for word in x.split() if word not in (spanish_stopwords)]))
-    #     return df
-    # def to_lowercase(df):
-    #     df = df.apply(lambda x: x.lower())
-    #     return df
+    spanish_stopwords = stopwords.words('spanish')
+    def remove_stopwords(df):
+        #print([word for word in df.split() if word not in spanish_stopwords])
+        return " ".join([word for word in df.split() if word not in spanish_stopwords])
 
-    def stem_text(df):
-        stemmer = SnowballStemmer(language='spanish')
-        df = df.apply(lambda x: " ".join([stemmer.stem(word) for word in x.split()]))
-        return df
-    # Con esta funcion quitamos los signos de puntuacion
-    def depuntuation (df):
-        df = df.apply(lambda x: x.replace('[{}]'.format(string.punctuation), ''))
-        return df
+    #snowball
+    from nltk.stem.snowball import SnowballStemmer
 
-    # Con esta funcion quitamos las tildes
-    def remove_tildes(df):
-        df = df["Input"].str.normalize('NFKD').str.encode('ascii', errors='ignore').str.decode('utf-8')
-        return df
+    def spanish_stemmer(x):
+        stemmer = SnowballStemmer('spanish')
+        return " ".join([stemmer.stem(word) for word in x.split()])
 
-    # Con esta funcion quitamos los stopwords
-    def remove_stopwords(df):    
-        spanish_stopwords = stopwords.words('spanish')
-        df = df.apply(lambda x: ' '.join([word for word in x.split() if word not in (spanish_stopwords)]))
-        return df
 
-    # Con esta funcion pasamos las celdas a minuscula
-    def to_lowercase(df):
-        df['Input'] = df['Input'].apply(lambda x: x.lower())
-        return df
-    
-    #Signos de puntuacion, tildes y minusculas
-    data = pd.DataFrame({'Input' : [str(request.args["question"])]})
-    
-    data= depuntuation(data)
-    data= to_lowercase(data)
-    data= remove_tildes(data)
+    data = str(request.args["question"])
+    data= signs_texts(data)
+    data= normalize(data)
     data= remove_stopwords(data)
-    data= stem_text(data)
-    prediction = model.predict(data)
+    data= spanish_stemmer(data)
+    prediction = model.predict(pd.Series(data))
     prediction = str(prediction[0])
     if prediction == '0':
         return jsonify({"respond":conversacion[0]['Respuesta']})
