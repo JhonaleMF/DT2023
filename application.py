@@ -9,7 +9,7 @@ import string
 import dill
 
 from nltk.stem.snowball import SnowballStemmer
-nltk.download("stopwords")
+
 from nltk.corpus import stopwords
 
 
