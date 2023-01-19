@@ -19,7 +19,7 @@ os.chdir(os.path.dirname(__file__))
 
 application = flask.Flask(__name__)
 
-model = pickle.load(open(r'modellll.pkl', 'rb'))
+
 
 conversacion={'Introduccion':'''Hola, soy SARA. ¿En qué puedo ayudarte? Por favor, introduce brevemente qué te preocupa y veré que puedo hacer. Todavía estoy en desarrollo, por lo que te agradecería que lo comentases en una única oración''',
 
@@ -44,6 +44,7 @@ http://127.0.0.1:5000/prediccion?question=Frase
 
 @application.route('/prediccion', methods=['GET'])
 def predict():
+    model = pickle.load(open(r'modellll.pkl', 'rb'))
     # with open("tmp.pkl", "rb") as f:
     #     model = dill.load(f)
         # Con esta funcion dejamos solo las raices de las palabrasssssssssssssssss
