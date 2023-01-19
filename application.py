@@ -7,6 +7,9 @@ import os
 import re
 import nltk
 nltk.download('stopwords')
+from flask_cors import CORS
+
+cors = CORS()
 
 from nltk.stem.snowball import SnowballStemmer
 
@@ -18,6 +21,7 @@ os.chdir(os.path.dirname(__file__))
 
 
 application = flask.Flask(__name__)
+cors.init_app(application)
 
 
 
